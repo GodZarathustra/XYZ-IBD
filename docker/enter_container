@@ -1,0 +1,24 @@
+#!/bin/bash
+CURRENT_DIR=$(dirname $(realpath $0))
+PROJECT_DIR=$(dirname $CURRENT_DIR)
+CONTAINER_NAME=blenderproc
+BOP_ROOT=/home/shq/Datasets/BOP
+TEXTURES_ROOT=/home/shq/Datasets/cc_textures
+IMAGE_NAME=shihaoqi/blenderproc:latest
+
+if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
+    docker start $CONTAINER_NAME
+    docker exec -it $CONTAINER_NAME /bin/bash
+else
+    echo $PROJECT_DIR
+    docker run -it \
+        --gpus '"device=0"' \
+        --name $CONTAINER_NAME \
+        --volume="$BOP_ROOT:/workspace/datasets/BOP:ro" \
+        --volume="$TEXTURES_ROOT:/workspace/datasets/cc_textures:ro" \
+        --volume="$PROJECT_DIR/output:/workspace/output:rw" \
+        --volume="/dev/shm:/dev/shm:rw" \
+        --env USER=root \
+        $IMAGE_NAME \
+        /bin/bash
+fi

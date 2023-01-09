@@ -1,0 +1,9 @@
+#!/bin/bash
+
+CURRENT_DIR=$(dirname $(realpath $0))
+PROJECT_DIR=$(dirname $CURRENT_DIR)
+
+cd $PROJECT_DIR
+git ls-files -z | xargs -0 tar -czvf archive.tar.gz
+mv archive.tar.gz output
+docker build -t shihaoqi/blenderproc:latest -f docker/Dockerfile .
