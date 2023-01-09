@@ -16,7 +16,7 @@ else
         --name $CONTAINER_NAME \
         --volume="$BOP_ROOT:/workspace/datasets/BOP:ro" \
         --volume="$TEXTURES_ROOT:/workspace/datasets/cc_textures:ro" \
-        --volume="$PROJECT_DIR/output:/workspace/output:rw" \
+        --volume="$PROJECT_DIR:/workspace/BlenderProc:rw" \
         --volume="/dev/shm:/dev/shm:rw" \
         --env USER=root \
         $IMAGE_NAME \

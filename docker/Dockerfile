@@ -20,7 +20,8 @@ RUN rm blender-3.3.1-linux-x64.tar.xz
 
 COPY output/archive.tar.gz .
 RUN mkdir BlenderProc && mv archive.tar.gz BlenderProc && cd BlenderProc && tar xvf archive.tar.gz
-RUN cd BlenderProc && pip install -e .
+RUN cd BlenderProc && pip install .
+RUN rm -rf BlenderProc
 RUN blenderproc quickstart
 RUN rm -rf output
 
