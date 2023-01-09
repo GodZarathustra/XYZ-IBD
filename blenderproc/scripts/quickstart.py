@@ -1,13 +1,3 @@
-"""
-The quickstart example:
-
-1. A monkey object is created plus a light, which illuminates the monkey.
-2. A light is created, placed and gets a proper energy level set
-3. The camera is placed in the scene to look at the monkey
-4. A color image is rendered
-5. The rendered image is saved in an .hdf5 file container
-
-"""
 import blenderproc as bproc
 
 import numpy as np
