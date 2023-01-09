@@ -235,7 +235,7 @@ class _BopLoader:
             raise FileNotFoundError(f"It seems the BOP dataset does not exist under the given path {bop_dataset_path}")
 
         # Install bop_toolkit_lib
-        SetupUtility.setup_pip(["git+https://github.com/thodan/bop_toolkit"])
+        SetupUtility.setup_pip(["git+http://github.com/thodan/bop_toolkit"])
         os.environ["BOP_PATH"] = bop_path
 
         return bop_path, bop_dataset_name
