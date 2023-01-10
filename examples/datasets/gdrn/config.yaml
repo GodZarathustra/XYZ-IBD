@@ -1,0 +1,56 @@
+CC_TEXTURES_DIR: '/home/shq/Datasets/cc_textures'
+OUTPUT_DIR: '/home/shq/Projects/mycode/BlenderProc/output/custom'
+NUM_SCENES: 1
+NUM_CAMERAS_PER_SCENE: 1
+
+OBJECT:
+    FILE: '/home/shq/Data/VG1207/butterfly/butterfly_mm.stl'
+    # m / mm / auto
+    UNIT: 'auto'
+    DECIMATION: 15000  # -1 for no decimation
+    MOVE_TO_MASS_CENTER: true
+    # auto / smooth / flat
+    SHADING_MODE: 'auto'
+    POSE_SAMPLER:
+        NUM: 30
+        MIN_HEIGHT: 1
+        MAX_HEIGHT: 1.5
+        ENABLE_PHYSICS: true
+        PHYSICS:
+            MIN_SIMULATION_TIME: 3
+            MAX_SIMULATION_TIME: 10
+            SUBSTEPS_PER_FRAME: 15
+            SOLVER_ITERS: 15
+
+TOTE:
+    # auto / scalar
+    WIDTH: auto
+    LENGTH: auto
+    HEIGHT: auto
+    WALL_VISIBLE: true
+    RANDOM_TEXTURE: true
+
+CAMERA:
+    INTRINSICS:
+        FX: 1000
+        FY: 1000
+        PPX: 640
+        PPY: 480
+        WIDTH: 1280
+        HEIGHT: 960
+        RANDOM_PERCENT: 10
+    POSE_SAMPLER:
+        MIN_HEIGHT: 0.6
+        MAX_HEIGHT: 0.8
+        MIN_ELEVATION: 75
+        MAX_ELEVATION: 90
+    
+LIGHT:
+    MIN_NUM: 1
+    MAX_NUM: 3
+    MIN_ENERGY: 1
+    MAX_ENERGY: 20
+    MIN_HEIGHT: 0.6
+    MAX_HEIGHT: 0.8
+    MIN_ELEVATION: 5
+    MAX_ELEVATION: 60
