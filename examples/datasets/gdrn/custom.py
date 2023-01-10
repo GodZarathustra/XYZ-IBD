@@ -3,8 +3,11 @@ import math
 import bpy
 import argparse
 import os
+import os.path as osp
 import shutil
+import cv2
 import numpy as np
+import json
 from typing import List
 from loguru import logger
 from functools import partial
@@ -71,17 +74,15 @@ def create_tote_planes(tote_cfg):
     length = tote_cfg.LENGTH
     height = tote_cfg.HEIGHT
     tote_planes = [
-        bproc.object.create_primitive('PLANE', scale=[width/2, length/2, 0]),
-        bproc.object.create_primitive('PLANE', scale=[width/2, height/2, 0], location=[0, -length/2, height/2], rotation=[-math.pi/2, 0, 0]),
-        bproc.object.create_primitive('PLANE', scale=[width/2, height/2, 0], location=[0, length/2, height/2], rotation=[math.pi/2, 0, 0]),
-        bproc.object.create_primitive('PLANE', scale=[height/2, length/2, 0], location=[-width/2, 0, height/2], rotation=[0, math.pi/2, 0]),
-        bproc.object.create_primitive('PLANE', scale=[height/2, length/2, 0], location=[width/2, 0, height/2], rotation=[0, -math.pi/2, 0]),
+        bproc.object.create_primitive('PLANE', scale=[width*2, length*2, 1]),
+        bproc.object.create_primitive('PLANE', scale=[width/2, height/2, 1], location=[0, -length/2, height/2], rotation=[-math.pi/2, 0, 0]),
+        bproc.object.create_primitive('PLANE', scale=[width/2, height/2, 1], location=[0, length/2, height/2], rotation=[math.pi/2, 0, 0]),
+        bproc.object.create_primitive('PLANE', scale=[height/2, length/2, 1], location=[-width/2, 0, height/2], rotation=[0, math.pi/2, 0]),
+        bproc.object.create_primitive('PLANE', scale=[height/2, length/2, 1], location=[width/2, 0, height/2], rotation=[0, -math.pi/2, 0]),
         ]
     for i, tote_plane in enumerate(tote_planes):
         if i == 0:
             tote_plane.enable_rigidbody(False, collision_shape='BOX', mass=1.0, friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
-            if not tote_cfg.WALL_VISIBLE:
-                tote_planes[0].set_scale([2, 2, 2])
         else:
             tote_plane.enable_rigidbody(False, collision_shape='BOX', mass=1.0, friction = 0.0, linear_damping = 0.99, angular_damping = 0.99)
             if not tote_cfg.WALL_VISIBLE:
@@ -100,7 +101,7 @@ def create_tote_planes(tote_cfg):
         [0, -funnel_angle, 0],
     ]
     funnel_planes = [
-        bproc.object.create_primitive('PLANE', scale=[10, 10, 0], location=coord, rotation=rotation)
+        bproc.object.create_primitive('PLANE', scale=[10, 10, 1], location=coord, rotation=rotation)
         for coord, rotation in zip(funnel_plane_coords, funnel_plane_rotation)
     ]
     for i, funnel_plane in enumerate(funnel_planes):
@@ -124,10 +125,12 @@ def sample_objects(base_obj: bproc.types.MeshObject,
     if sampler_cfg.MAX_HEIGHT < sampler_cfg.MIN_HEIGHT + 0.1:
         sampler_cfg.MAX_HEIGHT = sampler_cfg.MIN_HEIGHT + 0.1
     objects = []
-    for _ in range(sampler_cfg.NUM):
+    num_objects = np.random.randint(sampler_cfg.MIN_NUM, sampler_cfg.MAX_NUM + 1)
+    friction = np.random.choice([0.0, 100.0])
+    for _ in range(num_objects):
         obj = base_obj.duplicate()
         obj.hide(False)
-        obj.enable_rigidbody(True, mass=1.0, friction = 100.0, linear_damping = 0.99, angular_damping = 0.99, collision_margin=0.0005)
+        obj.enable_rigidbody(True, mass=1.0, friction = friction, linear_damping = 0.99, angular_damping = 0.99, collision_margin=0.0005)
         objects.append(obj)
     padding = sampler_cfg.MIN_HEIGHT - tote_cfg.HEIGHT
     cube_min = [-tote_cfg.WIDTH - padding, -tote_cfg.LENGTH - padding, sampler_cfg.MIN_HEIGHT]
@@ -168,8 +171,8 @@ def set_camera_intrinsics(camera_cfg):
     ppy = np.random.uniform(camera_cfg.PPY * min_ratio, camera_cfg.PPY * max_ratio)
     width = camera_cfg.WIDTH
     height = camera_cfg.HEIGHT
-    bproc.camera.set_intrinsics_from_K_matrix([
-        [fx, 0, ppx], [0, fy, ppy], [0, 0, 1]], width, height, 0.05, 10)
+    bproc.camera.set_intrinsics_from_K_matrix([[fx, 0, ppx], [0, fy, ppy], [0, 0, 1]], width, height, 0.05, 10)
+    return [[fx, 0, ppx], [0, fy, ppy], [0, 0, 1]]
     
 def sample_camera(objects, sampler_cfg):
     location = bproc.sampler.shell(center=[0, 0, 0],
@@ -181,7 +184,62 @@ def sample_camera(objects, sampler_cfg):
     rotation_matrix = bproc.camera.rotation_from_forward_vec(poi - location, inplane_rot=np.random.uniform(-3.14159, 3.14159))
     cam2world_matrix = bproc.math.build_transformation_mat(location, rotation_matrix)
     bproc.camera.add_camera_pose(cam2world_matrix, frame=0)
+    return cam2world_matrix
 
+def sample_objects_material(objects, sampler_cfg):
+    for obj in objects:        
+        mat = obj.get_materials()[0]
+        grey = np.random.uniform(sampler_cfg.MIN_GRAY, sampler_cfg.MAX_GRAY)
+        mat.set_principled_shader_value("Base Color", [grey, grey, grey, 1])      
+        mat.set_principled_shader_value("Roughness", np.random.uniform(sampler_cfg.MIN_ROUGHNESS, sampler_cfg.MAX_ROUGHNESS))
+        mat.set_principled_shader_value("Specular", np.random.uniform(sampler_cfg.MIN_SPECULAR, sampler_cfg.MAX_SPECULAR))
+        mat.set_principled_shader_value("Metallic", np.random.uniform(sampler_cfg.MIN_METALLIC, sampler_cfg.MAX_METALLIC))
+
+def delete_objects(objects):
+    for obj in objects:
+        bpy.data.meshes.remove(obj.blender_obj.data)
+        obj.delete()
+
+def delete_lights(lights):
+    for light in lights:
+        bpy.data.lights.remove(light.blender_obj.data)
+        light.delete()
+
+def write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id):
+    if 'colors' in data:
+        color = data['colors'][0]
+        color_dir = osp.join(scene_dir, 'color')
+        os.makedirs(color_dir, exist_ok=True)
+        color_path = f'{color_dir}/{camera_id:06}.png'
+        cv2.imwrite(color_path, color)
+    if 'depth' in data:
+        depth = data['depth'][0]
+        depth = (depth * cfg.DEPTH_SCALE).astype(np.uint16)
+        depth_dir = osp.join(scene_dir, 'depth')
+        os.makedirs(depth_dir, exist_ok=True)
+        depth_path = f'{depth_dir}/{camera_id:06}.png'
+        cv2.imwrite(depth_path, depth)
+    cam_infos_path = osp.join(scene_dir, 'camera_infos.json')
+    if osp.exists(cam_infos_path):
+        with open(cam_infos_path, 'r') as f:
+            cam_infos = json.load(f)
+    else:
+        cam_infos = dict()
+    cam_infos[f'{camera_id:06}'] = {
+            "fx": cam_K[0][0],
+            "fy": cam_K[1][1],
+            "ppx": cam_K[0][2],
+            "ppy": cam_K[1][2],
+            "hom_mat": cam2world_mat[:3].flatten().tolist(),
+            }
+    with open(cam_infos_path, 'w') as f:
+        json.dump(cam_infos, f)
+
+def write_object_poses(objects, scene_dir):
+    poses = [obj.get_local2world_mat() for obj in objects]
+    data = {i:{"hom_mat": pose[:3].flatten().tolist()} for i, pose in enumerate(poses)}
+    with open(osp.join(scene_dir, 'object_poses_in_world.json'), 'w') as f:
+        json.dump(data, f)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config', type=str, help='path to the config.yaml file')
@@ -193,6 +251,8 @@ os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 
 bproc.init()
 bproc.renderer.set_max_amount_of_samples(50)
+if cfg.ENABLE_DEPTH:
+    bproc.renderer.enable_depth_output(activate_antialiasing=False)
 
 materials = None
 base_obj = load_object(cfg.OBJECT)
@@ -201,10 +261,13 @@ compute_tote_size(base_obj, cfg.TOTE)
 tote_planes, funnel_planes = create_tote_planes(cfg.TOTE)
 for scene_id in range(cfg.NUM_SCENES):
     logger.info('Scene {}:', scene_id)
+    scene_dir = osp.join(cfg.OUTPUT_DIR, f'{scene_id:06}')
+    os.makedirs(scene_dir, exist_ok=True)
     objects = sample_objects(base_obj, tote_planes + funnel_planes, cfg.OBJECT.POSE_SAMPLER, cfg.TOTE)
+    write_object_poses(objects, scene_dir)
     for camera_id in range(cfg.NUM_CAMERAS_PER_SCENE):
         logger.info('Scene {} / Cemera {}', scene_id, camera_id)
-        set_camera_intrinsics(cfg.CAMERA.INTRINSICS)
+        cam_K = set_camera_intrinsics(cfg.CAMERA.INTRINSICS)
         lights = sample_lights(cfg.LIGHT)
         if cfg.TOTE.RANDOM_TEXTURE:
             if materials is None:
@@ -212,18 +275,13 @@ for scene_id in range(cfg.NUM_SCENES):
             mat = np.random.choice(materials)
             for plane in tote_planes:
                 plane.replace_materials(mat)
-        sample_camera(objects, cfg.CAMERA.POSE_SAMPLER)
-        # for light in lights:
-        #     bpy.data.lights.remove(light.blender_obj.data)
-        #     light.delete()
+        cam2world_mat = sample_camera(objects, cfg.CAMERA.POSE_SAMPLER)
+        sample_objects_material(objects, cfg.OBJECT.MATERIAL_SAMPLER)
 
-    # for obj in objects:
-    #     bpy.data.meshes.remove(obj.blender_obj.data)
-    #     obj.delete()
+        data = bproc.renderer.render()
+        write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id)
+
+        delete_lights(lights)
+
+    delete_objects(objects)
     
-    
- 
-# 
-# data = bproc.renderer.render()
-# bproc.writer.write_hdf5(cfg.OUTPUT_DIR, data)
- 

@@ -275,6 +275,7 @@ class MeshObject(Entity):
         :param hide_object: Determines whether the object should be hidden in rendering.
         """
         self.blender_obj.hide_render = hide_object
+        self.blender_obj.hide_viewport = hide_object
 
     def disable_rigidbody(self):
         """ Disables the rigidbody element of the object """

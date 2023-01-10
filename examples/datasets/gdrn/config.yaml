@@ -1,10 +1,14 @@
 CC_TEXTURES_DIR: '/home/shq/Datasets/cc_textures'
-OUTPUT_DIR: '/home/shq/Projects/mycode/BlenderProc/output/custom'
-NUM_SCENES: 1
-NUM_CAMERAS_PER_SCENE: 1
+OUTPUT_DIR: '/home/shq/Projects/my/BlenderProc/output/custom'
+ENABLE_DEPTH: true
+DEPTH_SCALE: 10000
+NUM_SCENES: 2000
+NUM_CAMERAS_PER_SCENE: 25
 
 OBJECT:
-    FILE: '/home/shq/Data/VG1207/butterfly/butterfly_mm.stl'
+  # FILE: "/home/shq/Datasets/DeepTote/00000001/model.stl"
+    FILE: "/home/shq/Datasets/DeepTote/00010149/model.stl"
+  #  FILE: "/home/shq/Downloads/butterfly.ply"
     # m / mm / auto
     UNIT: 'auto'
     DECIMATION: 15000  # -1 for no decimation
@@ -12,7 +16,8 @@ OBJECT:
     # auto / smooth / flat
     SHADING_MODE: 'auto'
     POSE_SAMPLER:
-        NUM: 30
+        MIN_NUM: 50
+        MAX_NUM: 50
         MIN_HEIGHT: 1
         MAX_HEIGHT: 1.5
         ENABLE_PHYSICS: true
@@ -21,13 +26,22 @@ OBJECT:
             MAX_SIMULATION_TIME: 10
             SUBSTEPS_PER_FRAME: 15
             SOLVER_ITERS: 15
+    MATERIAL_SAMPLER:
+        MIN_GRAY: 0.0
+        MAX_GRAY: 1.0
+        MIN_ROUGHNESS: 0
+        MAX_ROUGHNESS: 0.5
+        MIN_SPECULAR: 0.3
+        MAX_SPECULAR: 1.0
+        MIN_METALLIC: 0
+        MAX_METALLIC: 1.0
 
 TOTE:
     # auto / scalar
     WIDTH: auto
     LENGTH: auto
-    HEIGHT: auto
-    WALL_VISIBLE: true
+    HEIGHT: 0.5
+    WALL_VISIBLE: false
     RANDOM_TEXTURE: true
 
 CAMERA:
@@ -38,10 +52,10 @@ CAMERA:
         PPY: 480
         WIDTH: 1280
         HEIGHT: 960
-        RANDOM_PERCENT: 10
+        RANDOM_PERCENT: 5
     POSE_SAMPLER:
-        MIN_HEIGHT: 0.6
-        MAX_HEIGHT: 0.8
+        MIN_HEIGHT: 1.5
+        MAX_HEIGHT: 1.5
         MIN_ELEVATION: 75
         MAX_ELEVATION: 90
     
@@ -52,5 +66,5 @@ LIGHT:
     MAX_ENERGY: 20
     MIN_HEIGHT: 0.6
     MAX_HEIGHT: 0.8
-    MIN_ELEVATION: 5
-    MAX_ELEVATION: 60
+    MIN_ELEVATION: 30
+    MAX_ELEVATION: 90
