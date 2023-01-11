@@ -2,7 +2,7 @@ import os
 import os.path as osp
 import json
 import shutil
-import imageio
+import imageio.v2 as imageio
 import numpy as np
 import cv2
 from glob import glob
@@ -16,7 +16,7 @@ def load_json(filepath):
         return json.load(f)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('config', type=str, help='path to the config.yaml file')
+parser.add_argument('--config', type=str, help='path to the config.yaml file')
 args = parser.parse_args()
 if args.config is None:
     args.config = osp.join(osp.dirname(__file__), 'config.yaml')

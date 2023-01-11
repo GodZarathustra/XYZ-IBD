@@ -20,7 +20,7 @@ from bop_toolkit_lib import renderer
 app_backend = "egl"
 gl_backend = "gl2"  # "pyopengl2"  # speed: 'gl+' < 'gl2' < 'pyopengl2'
 vispy.use(app=app_backend, gl=gl_backend)
-print("vispy uses app: {}, gl: {}".format(app_backend, gl_backend))
+# print("vispy uses app: {}, gl: {}".format(app_backend, gl_backend))
 
 # RGB vertex shader.
 _rgb_vertex_code = """

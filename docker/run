@@ -1,0 +1,28 @@
+#!/bin/bash
+CURRENT_DIR=$(dirname $(realpath $0))
+PROJECT_DIR=$(dirname $CURRENT_DIR)
+
+IMAGE_NAME=blenderproc/gdrn:latest
+CONTAINER_NAME=blenderproc
+CONTAINER_HOME=/home/bproc
+
+BOP_ROOT=/home/shq/Datasets/BOP
+TEXTURES_ROOT=/home/shq/Datasets/cc_textures
+
+if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
+    docker rm -f $CONTAINER_NAME
+fi
+docker run -it \
+    --rm \
+    --gpus '"device=0"' \
+    --name $CONTAINER_NAME \
+    --volume="$BOP_ROOT:$CONTAINER_HOME/Datasets/BOP:ro" \
+    --volume="$TEXTURES_ROOT:$CONTAINER_HOME/Datasets/cc_textures:ro" \
+    --volume="$PROJECT_DIR:$CONTAINER_HOME/BlenderProc:rw" \
+    --volume="/dev/shm:/dev/shm:rw" \
+    --env http_proxy=$http_proxy \
+    --env https_proxy=$https_proxy \
+    --network=host \
+    $IMAGE_NAME \
+    /bin/bash -c './BlenderProc/run_gdrn_custom.sh'
+    # /bin/bash

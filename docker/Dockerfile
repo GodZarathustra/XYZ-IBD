@@ -86,5 +86,8 @@ COPY output/archive.tar.gz .
 RUN mkdir BlenderProc && mv archive.tar.gz BlenderProc && cd BlenderProc && tar xvf archive.tar.gz
 RUN cd BlenderProc && pip install .
 RUN rm -rf BlenderProc
-RUN echo 'export PATH=$HOME/.local/bin:$PATH' >> $HOME/.bashrc
+ENV PATH="$HOME/.local/bin:$PATH"
 
+# warm up
+RUN $HOME/.local/bin/blenderproc quickstart
+RUN rm -rf output
