@@ -205,6 +205,13 @@ def delete_lights(lights):
         bpy.data.lights.remove(light.blender_obj.data)
         light.delete()
 
+def camera_pose_blender2common(pose):
+    flip_yz = np.array([[1, 0, 0, 0],
+                        [0,-1, 0 ,0],
+                        [0, 0,-1, 0],
+                        [0 ,0, 0, 1]], dtype=float)
+    return np.dot(pose, flip_yz)
+
 def write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id):
     if 'colors' in data:
         color = data['colors'][0]
@@ -219,27 +226,40 @@ def write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id):
         os.makedirs(depth_dir, exist_ok=True)
         depth_path = f'{depth_dir}/{camera_id:06}.png'
         cv2.imwrite(depth_path, depth)
-    cam_infos_path = osp.join(scene_dir, 'camera_infos.json')
+    cam_infos_path = osp.join(scene_dir, 'scene_cameras.json')
     if osp.exists(cam_infos_path):
         with open(cam_infos_path, 'r') as f:
             cam_infos = json.load(f)
     else:
         cam_infos = dict()
+    cam2world_mat = camera_pose_blender2common(cam2world_mat)
     cam_infos[f'{camera_id:06}'] = {
             "fx": cam_K[0][0],
             "fy": cam_K[1][1],
             "ppx": cam_K[0][2],
             "ppy": cam_K[1][2],
             "hom_mat": cam2world_mat[:3].flatten().tolist(),
+            "depth_scale": cfg.DEPTH_SCALE,
             }
     with open(cam_infos_path, 'w') as f:
-        json.dump(cam_infos, f)
+        json.dump(cam_infos, f, indent=2)
 
 def write_object_poses(objects, scene_dir):
     poses = [obj.get_local2world_mat() for obj in objects]
-    data = {i:{"hom_mat": pose[:3].flatten().tolist()} for i, pose in enumerate(poses)}
-    with open(osp.join(scene_dir, 'object_poses_in_world.json'), 'w') as f:
-        json.dump(data, f)
+    data = { f'{i:06}':{"hom_mat": pose[:3].flatten().tolist()} for i, pose in enumerate(poses) }
+    with open(osp.join(scene_dir, 'scene_objects.json'), 'w') as f:
+        json.dump(data, f, indent=2)
+
+def export_mesh(filepath: str):
+    ext = os.path.splitext(filepath)[-1]
+    if ext not in ['.ply', '.stl']:
+        raise Exception('export_mesh only support ply and stl format')
+    if ext == '.ply':
+        bpy.ops.export_mesh.ply(filepath=filepath)
+    elif ext == '.stl':
+        bpy.ops.export_mesh.stl(filepath=filepath)
+    print('Export CAD Model: {}'.format(filepath))
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config', type=str, help='path to the config.yaml file')
@@ -257,6 +277,14 @@ if cfg.ENABLE_DEPTH:
 materials = None
 base_obj = load_object(cfg.OBJECT)
 base_obj.hide()
+
+# export mm & m unit model
+export_mesh(osp.join(cfg.OUTPUT_DIR, 'model_m.ply'))
+scale = base_obj.get_scale()
+base_obj.set_scale(scale * 1000)
+export_mesh(osp.join(cfg.OUTPUT_DIR, 'model_mm.ply'))
+base_obj.set_scale(scale)
+
 compute_tote_size(base_obj, cfg.TOTE)
 tote_planes, funnel_planes = create_tote_planes(cfg.TOTE)
 for scene_id in range(cfg.NUM_SCENES):
