@@ -1,12 +1,15 @@
-CC_TEXTURES_DIR: '/home/shq/Datasets/cc_textures'
-OUTPUT_DIR: '/home/shq/Projects/mycode/BlenderProc/output/custom'
+CC_TEXTURES_DIR: '/home/bproc/Datasets/cc_textures'
+# CC_TEXTURES_DIR: '/home/shq/Datasets/cc_textures'
+OUTPUT_DIR: '/home/bproc/BlenderProc/output/custom'
+# OUTPUT_DIR: '/home/shq/Projects/my/BlenderProc/output/custom'
 ENABLE_DEPTH: true
 DEPTH_SCALE: 10000
 NUM_SCENES: 5
 NUM_CAMERAS_PER_SCENE: 5
 
 OBJECT:
-    FILE: "/home/shq/Data/VG1207/butterfly/butterfly_mm.stl"
+    FILE: "/home/bproc/Datasets/BOP/tless/models_cad/obj_000001.ply"
+    # FILE: "/home/shq/Datasets/BOP/tless/models_cad/obj_000001.ply"
     # m / mm / auto
     UNIT: 'auto'
     DECIMATION: 15000  # -1 for no decimation

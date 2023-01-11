@@ -18,6 +18,8 @@ def load_json(filepath):
 parser = argparse.ArgumentParser()
 parser.add_argument('config', type=str, help='path to the config.yaml file')
 args = parser.parse_args()
+if args.config is None:
+    args.config = osp.join(osp.dirname(__file__), 'config.yaml')
 cfg = OmegaConf.load(args.config)
 
 output_dir = cfg.OUTPUT_DIR
@@ -64,7 +66,7 @@ with Progress() as progress:
                 depth_gt = depth_gt_large[image_offset_y:image_offset_y+image_height,
                                         image_offset_x:image_offset_x+image_width]
                 dist_gt = misc.depth_im_to_dist_im_fast(depth_gt, K)
-                visib_gt = visibility.estimate_visib_mask_gt(dist_im, dist_gt, 0.002, visib_mode='bop19')
+                visib_gt = visibility.estimate_visib_mask_gt(dist_im, dist_gt, 0.005, visib_mode='bop19')
                 
                 obj_mask_gt_large = depth_gt_large > 0
                 obj_mask_gt = dist_gt > 0

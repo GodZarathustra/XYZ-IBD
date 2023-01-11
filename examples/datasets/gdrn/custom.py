@@ -262,8 +262,10 @@ def export_mesh(filepath: str):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('config', type=str, help='path to the config.yaml file')
+parser.add_argument('--config', type=str, help='path to the config.yaml file')
 args = parser.parse_args()
+if args.config is None:
+    args.config = osp.join(osp.dirname(__file__), 'config.yaml')
 cfg = OmegaConf.load(args.config)
 
 shutil.rmtree(cfg.OUTPUT_DIR, ignore_errors=True)

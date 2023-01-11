@@ -67,7 +67,7 @@ with Progress() as progress:
                 depth_gt = ren.render_object(0, tf_cam_obj[:3, :3], tf_cam_obj[:3, 3], fx, fy, ppx, ppy)['depth']
                 dist_gt = misc.depth_im_to_dist_im_fast(depth_gt, K)
                 mask = dist_gt > 0
-                mask_visib = visibility.estimate_visib_mask_gt(dist_im, dist_gt, 0.002, visib_mode='bop19')
+                mask_visib = visibility.estimate_visib_mask_gt(dist_im, dist_gt, 0.005, visib_mode='bop19')
                 inout.save_im(osp.join(mask_dir, f'{camera_id}_{object_id}.png'), mask.astype(np.uint8) * 255)
                 inout.save_im(osp.join(mask_visib_dir, f'{camera_id}_{object_id}.png'), mask_visib.astype(np.uint8) * 255)
                 progress.advance(object_tqdm)
