@@ -23,7 +23,7 @@ if args.config is None:
 cfg = OmegaConf.load(args.config)
 
 output_dir = cfg.OUTPUT_DIR
-model_file = osp.join(output_dir, 'model_mm.ply')
+model_file = osp.join(output_dir, 'model_m.ply')
 scene_dirs = sorted(glob(osp.join(output_dir, '*')))
 scene_dirs = [x for x in scene_dirs if osp.isdir(x)]
 
@@ -55,7 +55,7 @@ with Progress() as progress:
             ppy = camera_info['ppy']
             K = np.array([[fx, 0, ppx], [0, fy, ppy], [0,0,1]], dtype=float)
             depth_im = imageio.imread(osp.join(depth_dir, f'{camera_id}.png')).astype(float)
-            depth_im *= (1 / cfg.DEPTH_SCALE)
+            depth_im *= cfg.DEPTH_SCALE
             dist_im = misc.depth_im_to_dist_im_fast(depth_im, K)
             tf_world_cam = np.array(camera_info['hom_mat'] + [0,0,0,1.0]).astype(float).reshape(4,4)
             object_tqdm = progress.add_task('object', total=len(objects_info))

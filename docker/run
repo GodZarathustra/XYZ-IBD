@@ -6,7 +6,7 @@ IMAGE_NAME=blenderproc/gdrn:latest
 CONTAINER_NAME=blenderproc
 CONTAINER_HOME=/home/bproc
 
-BOP_ROOT=/home/shq/Datasets/BOP
+MODELS_ROOT=/home/shq/Data/VG1207/hard-example
 TEXTURES_ROOT=/home/shq/Datasets/cc_textures
 
 if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
@@ -16,12 +16,10 @@ docker run -it \
     --rm \
     --gpus '"device=0"' \
     --name $CONTAINER_NAME \
-    --volume="$BOP_ROOT:$CONTAINER_HOME/Datasets/BOP:ro" \
+    --volume="$MODELS_ROOT:$CONTAINER_HOME/Datasets/models:ro" \
     --volume="$TEXTURES_ROOT:$CONTAINER_HOME/Datasets/cc_textures:ro" \
     --volume="$PROJECT_DIR:$CONTAINER_HOME/BlenderProc:rw" \
     --volume="/dev/shm:/dev/shm:rw" \
-    --env http_proxy=$http_proxy \
-    --env https_proxy=$https_proxy \
     --network=host \
     $IMAGE_NAME \
     /bin/bash -c './BlenderProc/run_gdrn_custom.sh'

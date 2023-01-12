@@ -15,18 +15,19 @@ from omegaconf import OmegaConf
 
 def load_object(object_cfg):
     object = bproc.loader.load_obj(object_cfg.FILE)[0]
-    if object_cfg.UNIT == 'auto':
+    unit = object_cfg.UNIT
+    if unit == 'auto':
         bound_box = object.get_bound_box(local_coords=True)
         diag_length = np.linalg.norm(np.max(bound_box, axis=0) - np.min(bound_box, axis=0))
         if diag_length < 2:
-            object_cfg.UNIT = 'm'
+            unit = 'm'
         else:
-            object_cfg.UNIT = 'mm'
-        logger.info('Object diagonal length :{:.4f} {}', diag_length, object_cfg.UNIT)
+            unit = 'mm'
+        logger.info('Object diagonal length: {:.4f} {}', diag_length, unit)
 
-    if object_cfg.UNIT == 'm':
+    if unit == 'm':
         pass
-    elif object_cfg.UNIT == 'mm':
+    elif unit == 'mm':
         object.set_scale([0.001, 0.001, 0.001])
         logger.info('Scale the object by 0.001: mm to m')
 
@@ -37,6 +38,7 @@ def load_object(object_cfg):
             object.edit_mode()
             ratio = object_cfg.DECIMATION / num_polygons
             bpy.ops.mesh.decimate(ratio=ratio)
+            bpy.ops.mesh.quads_convert_to_tris(quad_method='BEAUTY', ngon_method='BEAUTY')
             object.object_mode()
             num_polygons = len(object.get_mesh().polygons.values())
             logger.info('Decimate object to {} polygons', num_polygons)
@@ -221,7 +223,7 @@ def write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id):
         cv2.imwrite(color_path, color)
     if 'depth' in data:
         depth = data['depth'][0]
-        depth = (depth * cfg.DEPTH_SCALE).astype(np.uint16)
+        depth = (depth / cfg.DEPTH_SCALE).astype(np.uint16)
         depth_dir = osp.join(scene_dir, 'depth')
         os.makedirs(depth_dir, exist_ok=True)
         depth_path = f'{depth_dir}/{camera_id:06}.png'
@@ -278,7 +280,6 @@ if cfg.ENABLE_DEPTH:
 
 materials = None
 base_obj = load_object(cfg.OBJECT)
-base_obj.hide()
 
 # export mm & m unit model
 export_mesh(osp.join(cfg.OUTPUT_DIR, 'model_m.ply'))
@@ -286,6 +287,12 @@ scale = base_obj.get_scale()
 base_obj.set_scale(scale * 1000)
 export_mesh(osp.join(cfg.OUTPUT_DIR, 'model_mm.ply'))
 base_obj.set_scale(scale)
+
+# reload m unit model
+delete_objects([base_obj])
+cfg.OBJECT.FILE = osp.join(cfg.OUTPUT_DIR, 'model_m.ply')
+base_obj = load_object(cfg.OBJECT)
+base_obj.hide()
 
 compute_tote_size(base_obj, cfg.TOTE)
 tote_planes, funnel_planes = create_tote_planes(cfg.TOTE)
