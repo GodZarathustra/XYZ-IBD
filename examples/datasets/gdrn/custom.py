@@ -182,7 +182,7 @@ def sample_camera(objects, sampler_cfg):
                                     radius_max=sampler_cfg.MAX_HEIGHT,
                                     elevation_min=sampler_cfg.MIN_ELEVATION,
                                     elevation_max=sampler_cfg.MAX_ELEVATION)
-    poi = bproc.object.compute_poi(np.random.choice(objects, size=10, replace=False))
+    poi = bproc.object.compute_poi(np.random.choice(objects, size=min(10, len(objects)), replace=False))
     rotation_matrix = bproc.camera.rotation_from_forward_vec(poi - location, inplane_rot=np.random.uniform(-3.14159, 3.14159))
     cam2world_matrix = bproc.math.build_transformation_mat(location, rotation_matrix)
     bproc.camera.add_camera_pose(cam2world_matrix, frame=0)

@@ -88,6 +88,11 @@ RUN cd BlenderProc && pip install .
 RUN rm -rf BlenderProc
 ENV PATH="$HOME/.local/bin:$PATH"
 
+# install imageio's libfreeimage.so
+RUN wget https://github.com/imageio/imageio-binaries/raw/master/freeimage/libfreeimage-3.16.0-linux64.so
+RUN mkdir -p $HOME/.imageio/freeimage
+RUN mv libfreeimage-3.16.0-linux64.so $HOME/.imageio/freeimage
+
 # warm up
 RUN $HOME/.local/bin/blenderproc quickstart
 RUN rm -rf output

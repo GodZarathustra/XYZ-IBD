@@ -1,15 +1,12 @@
 CC_TEXTURES_DIR: '/home/bproc/Datasets/cc_textures'
-# CC_TEXTURES_DIR: '/home/shq/Datasets/cc_textures'
 OUTPUT_DIR: '/home/bproc/BlenderProc/output/custom'
-# OUTPUT_DIR: '/home/shq/Projects/my/BlenderProc/output/custom'
 ENABLE_DEPTH: true
-DEPTH_SCALE: 10000
-NUM_SCENES: 5
-NUM_CAMERAS_PER_SCENE: 5
+DEPTH_SCALE: 0.00005
+NUM_SCENES: 200
+NUM_CAMERAS_PER_SCENE: 25
 
 OBJECT:
-    FILE: "/home/bproc/Datasets/BOP/tless/models_cad/obj_000001.ply"
-    # FILE: "/home/shq/Datasets/BOP/tless/models_cad/obj_000001.ply"
+    FILE: "/home/bproc/Datasets/models/fixed2.ply"
     # m / mm / auto
     UNIT: 'auto'
     DECIMATION: 15000  # -1 for no decimation
@@ -18,7 +15,7 @@ OBJECT:
     SHADING_MODE: 'auto'
     POSE_SAMPLER:
         MIN_NUM: 10
-        MAX_NUM: 10
+        MAX_NUM: 100
         MIN_HEIGHT: 1
         MAX_HEIGHT: 1.5
         ENABLE_PHYSICS: true
@@ -39,24 +36,24 @@ OBJECT:
 
 TOTE:
     # auto / scalar
-    WIDTH: auto
-    LENGTH: auto
-    HEIGHT: 0.5
-    WALL_VISIBLE: false
+    WIDTH: 0.265
+    LENGTH: 0.355
+    HEIGHT: 0.15
+    WALL_VISIBLE: true
     RANDOM_TEXTURE: true
 
 CAMERA:
     INTRINSICS:
-        FX: 1000
-        FY: 1000
-        PPX: 640
-        PPY: 480
-        WIDTH: 1280
-        HEIGHT: 960
+        FX: 2400
+        FY: 2400
+        PPX: 993
+        PPY: 758
+        WIDTH: 2048
+        HEIGHT: 1536
         RANDOM_PERCENT: 5
     POSE_SAMPLER:
-        MIN_HEIGHT: 0.6
-        MAX_HEIGHT: 0.6
+        MIN_HEIGHT: 1.2
+        MAX_HEIGHT: 1.8
         MIN_ELEVATION: 75
         MAX_ELEVATION: 90
     
@@ -65,7 +62,7 @@ LIGHT:
     MAX_NUM: 3
     MIN_ENERGY: 1
     MAX_ENERGY: 20
-    MIN_HEIGHT: 0.6
-    MAX_HEIGHT: 0.8
-    MIN_ELEVATION: 30
+    MIN_HEIGHT: 1.2
+    MAX_HEIGHT: 1.8
+    MIN_ELEVATION: 75
     MAX_ELEVATION: 90
