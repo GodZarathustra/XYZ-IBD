@@ -264,9 +264,10 @@ def export_mesh(filepath: str):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--config', type=str, help='path to the config.yaml file')
+parser.add_argument('--config', type=str, default='path/to/config.yaml' ,help='path to the config.yaml file')
 args = parser.parse_args()
-if args.config is None:
+if not osp.exists(args.config):
+    logger.warning('given config file not found, use default configuration.')
     args.config = osp.join(osp.dirname(__file__), 'config.yaml')
 cfg = OmegaConf.load(args.config)
 
@@ -306,7 +307,7 @@ for scene_id in range(cfg.NUM_SCENES):
         logger.info('Scene {} / Cemera {}', scene_id, camera_id)
         cam_K = set_camera_intrinsics(cfg.CAMERA.INTRINSICS)
         lights = sample_lights(cfg.LIGHT)
-        if cfg.TOTE.RANDOM_TEXTURE:
+        if cfg.TOTE.RANDOM_TEXTURE and osp.exists(cfg.CC_TEXTURES_DIR):
             if materials is None:
                 materials = bproc.loader.load_ccmaterials(cfg.CC_TEXTURES_DIR)
             mat = np.random.choice(materials)

@@ -31,7 +31,7 @@ if [[ "$1" == "-it" ]]; then
 elif [[ "$1" == "-e" ]]; then
     MAP_SOURCE=--volume="$PROJECT_DIR:$CONTAINER_HOME/BlenderProc:rw"
 else
-    CMD="/bin/bash -c './BlenderProc/run_deep_tote.sh'"
+    CMD="/bin/bash -c './BlenderProc/run.sh'"
 fi
 
 rm -rf $OUTPUT_DIR
@@ -39,7 +39,7 @@ mkdir -p $OUTPUT_DIR
 
 docker run -it \
     --rm \
-    --gpus '"device=0"' \
+    --gpus "device=0" \
     --name $CONTAINER_NAME \
     --volume="$MODEL_PATH:$CONTAINER_HOME/input/$MODEL_NAME:ro" \
     --volume="$TEXTURES_DIR:$CONTAINER_HOME/input/cc_textures:ro" \

@@ -16,9 +16,10 @@ def load_json(filepath):
         return json.load(f)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--config', type=str, help='path to the config.yaml file')
+parser.add_argument('--config', type=str, default='path/to/config.yaml' ,help='path to the config.yaml file')
 args = parser.parse_args()
-if args.config is None:
+if not osp.exists(args.config):
+    print('given config file not found, use default configuration.')
     args.config = osp.join(osp.dirname(__file__), 'config.yaml')
 cfg = OmegaConf.load(args.config)
 
