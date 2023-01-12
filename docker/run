@@ -1,26 +1,51 @@
 #!/bin/bash
+
+# run
+#   run docker to generate datasets
+# run -it
+#   run docker with interactive mode
+# run -e
+#   run docker with interactive mode and map souce code to container (so you can edit source code in the container)
+
+
 CURRENT_DIR=$(dirname $(realpath $0))
 PROJECT_DIR=$(dirname $CURRENT_DIR)
 
-IMAGE_NAME=blenderproc/gdrn:latest
-CONTAINER_NAME=blenderproc
+IMAGE_NAME=bproc/deep-tote:latest
+CONTAINER_NAME=bproc_deep_tote
 CONTAINER_HOME=/home/bproc
 
-MODELS_ROOT=/home/shq/Data/VG1207/hard-example
-TEXTURES_ROOT=/home/shq/Datasets/cc_textures
+MODELS_DIR=/home/shq/Datasets/BOP/itodd/models
+TEXTURES_DIR=/home/shq/Datasets/cc_textures
+OUTPUT_DIR=/tmp/bproc_output
 
 if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
     docker rm -f $CONTAINER_NAME
 fi
+
+CMD=/bin/bash
+MAP_SOURCE=
+if [[ "$1" == "-it" ]]; then
+    CMD="/bin/bash"
+elif [[ "$1" == "-e" ]]; then
+    MAP_SOURCE=--volume="$PROJECT_DIR:$CONTAINER_HOME/BlenderProc:rw"
+else
+    CMD="/bin/bash -c './BlenderProc/run_deep_tote.sh'"
+fi
+
+rm -rf $OUTPUT_DIR
+mkdir -p $OUTPUT_DIR
+
 docker run -it \
     --rm \
     --gpus '"device=0"' \
     --name $CONTAINER_NAME \
-    --volume="$MODELS_ROOT:$CONTAINER_HOME/Datasets/models:ro" \
-    --volume="$TEXTURES_ROOT:$CONTAINER_HOME/Datasets/cc_textures:ro" \
-    --volume="$PROJECT_DIR:$CONTAINER_HOME/BlenderProc:rw" \
+    --volume="$OUTPUT_DIR:$CONTAINER_HOME/output:rw" \
+    --volume="$MODELS_DIR:$CONTAINER_HOME/input/models:ro" \
+    --volume="$TEXTURES_DIR:$CONTAINER_HOME/input/cc_textures:ro" \
+    $MAP_SOURCE \
     --volume="/dev/shm:/dev/shm:rw" \
     --network=host \
     $IMAGE_NAME \
-    /bin/bash -c './BlenderProc/run_gdrn_custom.sh'
-    # /bin/bash
+    $CMD
+    
