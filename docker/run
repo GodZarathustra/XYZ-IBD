@@ -15,7 +15,8 @@ IMAGE_NAME=bproc/deep-tote:latest
 CONTAINER_NAME=bproc_deep_tote
 CONTAINER_HOME=/home/bproc
 
-MODELS_DIR=/home/shq/Datasets/BOP/itodd/models
+MODEL_PATH=/home/shq/Datasets/BOP/itodd/models/obj_000001.ply
+MODEL_NAME=$(basename $MODEL_PATH)
 TEXTURES_DIR=/home/shq/Datasets/cc_textures
 OUTPUT_DIR=/tmp/bproc_output
 
@@ -40,9 +41,9 @@ docker run -it \
     --rm \
     --gpus '"device=0"' \
     --name $CONTAINER_NAME \
-    --volume="$OUTPUT_DIR:$CONTAINER_HOME/output:rw" \
-    --volume="$MODELS_DIR:$CONTAINER_HOME/input/models:ro" \
+    --volume="$MODEL_PATH:$CONTAINER_HOME/input/$MODEL_NAME:ro" \
     --volume="$TEXTURES_DIR:$CONTAINER_HOME/input/cc_textures:ro" \
+    --volume="$OUTPUT_DIR:$CONTAINER_HOME/output:rw" \
     $MAP_SOURCE \
     --volume="/dev/shm:/dev/shm:rw" \
     --network=host \

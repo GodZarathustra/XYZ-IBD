@@ -6,7 +6,7 @@ NUM_SCENES: 200
 NUM_CAMERAS_PER_SCENE: 25
 
 OBJECT:
-    FILE: "/home/bproc/input/models/obj_000001.ply"
+    FILE: "/home/bproc/input/obj_000001.ply"
     # m / mm / auto
     UNIT: 'auto'
     DECIMATION: 15000  # -1 for no decimation
