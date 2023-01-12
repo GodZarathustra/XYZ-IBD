@@ -85,13 +85,10 @@ RUN $HOME/blender/blender-3.3.1-linux-x64/3.3/python/bin/pip3 install omegaconf=
 COPY output/archive.tar.gz .
 RUN mkdir BlenderProc && mv archive.tar.gz BlenderProc && cd BlenderProc && tar xvf archive.tar.gz
 RUN cd BlenderProc && pip install .
-RUN rm -rf BlenderProc
-ENV PATH="$HOME/.local/bin:$PATH"
-
-# install imageio's libfreeimage.so
-RUN wget https://github.com/imageio/imageio-binaries/raw/master/freeimage/libfreeimage-3.16.0-linux64.so
 RUN mkdir -p $HOME/.imageio/freeimage
-RUN mv libfreeimage-3.16.0-linux64.so $HOME/.imageio/freeimage
+RUN mv BlenderProc/resources/libfreeimage-3.16.0-linux64.so $HOME/.imageio/freeimage
+ENV PATH="$HOME/.local/bin:$PATH"
+RUN rm -rf BlenderProc
 
 # warm up
 RUN $HOME/.local/bin/blenderproc quickstart
