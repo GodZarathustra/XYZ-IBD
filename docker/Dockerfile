@@ -26,6 +26,7 @@ RUN apt-get install -y libxi6
 RUN apt-get install -y libxrender1
 RUN apt-get install -y libglib2.0-0
 RUN apt-get install -y libfontconfig1-dev
+RUN apt-get install -y gosu
 
 USER $USER
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package -U
@@ -88,6 +89,9 @@ RUN cd BlenderProc && pip install .
 RUN mkdir -p $HOME/.imageio/freeimage
 RUN mv BlenderProc/resources/libfreeimage-3.16.0-linux64.so $HOME/.imageio/freeimage
 ENV PATH="$HOME/.local/bin:$PATH"
+RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> .bashrc
+
+USER root
 
 ## # warm up
 ## RUN $HOME/.local/bin/blenderproc quickstart

@@ -14,8 +14,8 @@ OBJECT:
     # auto / smooth / flat
     SHADING_MODE: 'auto'
     POSE_SAMPLER:
-        MIN_NUM: 10
-        MAX_NUM: 100
+        MIN_NUM: 5
+        MAX_NUM: 10
         MIN_HEIGHT: 1
         MAX_HEIGHT: 1.5
         ENABLE_PHYSICS: true
@@ -44,12 +44,12 @@ TOTE:
 
 CAMERA:
     INTRINSICS:
-        FX: 2400
-        FY: 2400
-        PPX: 993
-        PPY: 758
-        WIDTH: 2048
-        HEIGHT: 1536
+        FX: 512
+        FY: 512
+        PPX: 256
+        PPY: 256
+        WIDTH: 512
+        HEIGHT: 512
         RANDOM_PERCENT: 5
     POSE_SAMPLER:
         MIN_HEIGHT: 1.2
