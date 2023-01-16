@@ -18,8 +18,8 @@ OBJECT:
         MAX_NUM: 10
         MIN_HEIGHT: 1
         MAX_HEIGHT: 1.5
-        ENABLE_PHYSICS: true
         PHYSICS:
+            ENABLE: true
             MIN_SIMULATION_TIME: 3
             MAX_SIMULATION_TIME: 10
             SUBSTEPS_PER_FRAME: 15

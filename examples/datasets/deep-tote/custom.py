@@ -139,7 +139,7 @@ def sample_objects(base_obj: bproc.types.MeshObject,
     cube_max = [tote_cfg.WIDTH + padding, tote_cfg.LENGTH  + padding, sampler_cfg.MAX_HEIGHT]
     sample_pose_partial = partial(sample_pose, cube_min=cube_min, cube_max=cube_max)
     bproc.object.sample_poses(objects, sample_pose_partial, objects_to_check_collisions)
-    if sampler_cfg.ENABLE_PHYSICS:
+    if sampler_cfg.PHYSICS.ENABLE:
         bproc.object.simulate_physics_and_fix_final_poses(min_simulation_time=sampler_cfg.PHYSICS.MIN_SIMULATION_TIME,
                                                           max_simulation_time=sampler_cfg.PHYSICS.MAX_SIMULATION_TIME,
                                                           substeps_per_frame=sampler_cfg.PHYSICS.SUBSTEPS_PER_FRAME,
