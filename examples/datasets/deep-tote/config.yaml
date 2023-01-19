@@ -2,8 +2,8 @@ CC_TEXTURES_DIR: '/home/bproc/input/cc_textures'
 OUTPUT_DIR: '/home/bproc/output'
 ENABLE_DEPTH: true
 DEPTH_SCALE: 0.00005
-NUM_SCENES: 200
-NUM_CAMERAS_PER_SCENE: 25
+NUM_SCENES: 1
+NUM_CAMERAS_PER_SCENE: 5
 
 OBJECT:
     FILE: "/home/bproc/input/obj_000001.ply"

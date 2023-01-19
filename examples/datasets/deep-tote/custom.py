@@ -221,6 +221,7 @@ def write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id):
         os.makedirs(color_dir, exist_ok=True)
         color_path = f'{color_dir}/{camera_id:06}.png'
         cv2.imwrite(color_path, color)
+        image_height, image_width = color.shape[:2]
     if 'depth' in data:
         depth = data['depth'][0]
         depth = (depth / cfg.DEPTH_SCALE).astype(np.uint16)
@@ -240,6 +241,8 @@ def write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id):
             "fy": cam_K[1][1],
             "ppx": cam_K[0][2],
             "ppy": cam_K[1][2],
+            "width": image_width,
+            "height": image_height,
             "hom_mat": cam2world_mat[:3].flatten().tolist(),
             "depth_scale": cfg.DEPTH_SCALE,
             }
