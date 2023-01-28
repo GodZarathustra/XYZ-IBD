@@ -15,6 +15,17 @@ def load_json(filepath):
     with open(filepath, 'r') as f:
         return json.load(f)
 
+def write_json(filepath, data):
+    with open(filepath, 'w') as f:
+        json.dump(data, f, indent=2)
+
+def cleaning(scene_objects_json, scene_cameras_json):
+    os.remove(scene_objects_json)
+    cameras = load_json(scene_cameras_json)
+    for key in cameras.keys():
+        del cameras[key]["hom_mat"]
+    write_json(scene_cameras_json, cameras)
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, default='path/to/config.yaml' ,help='path to the config.yaml file')
 args = parser.parse_args()
@@ -44,8 +55,11 @@ with Progress() as progress:
         depth_dir = osp.join(scene_dir, 'depth')
         mask_dir = osp.join(scene_dir, 'mask')
         mask_visib_dir = osp.join(scene_dir, 'mask_visib')
-        cameras = load_json(osp.join(scene_dir, 'scene_cameras.json'))
-        objects_info = load_json(osp.join(scene_dir, 'scene_objects.json'))
+        cameras_json = osp.join(scene_dir, 'scene_cameras.json')
+        objects_json = osp.join(scene_dir, 'scene_objects.json')
+        cameras = load_json(cameras_json)
+        objects_info = load_json(objects_json)
+        cleaning(objects_json, cameras_json)
         annotations = dict()
         camera_tqdm = progress.add_task('camera', total=len(cameras))
         for camera_id, camera_info in cameras.items():
@@ -97,6 +111,8 @@ with Progress() as progress:
                     bbox_visib = misc.calc_2d_bbox(xs, ys, (image_width, image_height))
                 
                 anno = dict(
+                    model_id="000000",  # reserved field, maybe used in the future
+                    tf_cam_obj=tf_cam_obj.tolist(),
                     px_count_all=px_count_all,
                     px_count_valid=px_count_valid,
                     px_count_visib=px_count_visib,
@@ -112,4 +128,6 @@ with Progress() as progress:
         progress.advance(scene_tqdm)
         with open(osp.join(scene_dir, 'annotations.json'), 'w') as f:
             json.dump(annotations, f, indent=2)
+
+
         
