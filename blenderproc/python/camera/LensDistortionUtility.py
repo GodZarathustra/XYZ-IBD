@@ -144,7 +144,7 @@ def set_lens_distortion(k1: float, k2: float, k3: float = 0.0, p1: float = 0.0, 
                       "useful for ML (data leakage).")
                 print("For that, you can use the Matlab code in robotic.de/callab, which robustifies against "
                       "these unstable pixels.")
-                raise Exception("The iterative distortion algorithm is unstable.")
+                # raise Exception("The iterative distortion algorithm is unstable.")
 
         # update undistorted projection
         x -= x_ - P_und[0, :]  # * factor

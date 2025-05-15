@@ -1,0 +1,72 @@
+CC_TEXTURES_DIR: '/home/bproc/input/cc_textures'
+OUTPUT_DIR: '/workspace/output/obj_000018'
+ENABLE_DEPTH: true
+DEPTH_SCALE: 0.1 #0.09999999747378752 #0.01
+NUM_SCENES: 2
+NUM_CAMERAS_PER_SCENE: 25
+
+OBJECT:
+    # FILE: "/home/bproc/input/obj_000001.ply"
+    FILE: "/workspace/models/obj_000018.ply"
+    # m / mm / auto
+    UNIT: 'auto'
+    DECIMATION: 15000  # -1 for no decimation
+    MOVE_TO_MASS_CENTER: true
+    # auto / smooth / flat
+    SHADING_MODE: 'auto'
+    POSE_SAMPLER:
+        MIN_NUM: 7
+        MAX_NUM: 10
+        MIN_HEIGHT: 1
+        MAX_HEIGHT: 1.5
+        PHYSICS:
+            ENABLE: true
+            MIN_SIMULATION_TIME: 3
+            MAX_SIMULATION_TIME: 5
+            SUBSTEPS_PER_FRAME: 15
+            SOLVER_ITERS: 15
+    MATERIAL_SAMPLER:
+        MIN_GRAY: 0.0
+        MAX_GRAY: 1.0
+        MIN_ROUGHNESS: 0
+        MAX_ROUGHNESS: 0.5
+        MIN_SPECULAR: 0.3
+        MAX_SPECULAR: 1.0
+        MIN_METALLIC: 0
+        MAX_METALLIC: 1.0
+
+TOTE:
+    # auto / scalar
+    WIDTH: 0.35
+    LENGTH: 0.45
+    HEIGHT: 0.15
+    WALL_VISIBLE: true # true
+    RANDOM_TEXTURE: false
+    KP: 0.6
+
+CAMERA:
+    INTRINSICS:
+        FX: 1801.652 #512
+        FY: 1802.575 #512
+        PPX: 748.233 #256
+        PPY: 553.929 #256
+        WIDTH: 1440 #512
+        HEIGHT: 1080 #512
+        # RANDOM_PERCENT: 5
+    POSE_SAMPLER:
+        MIN_HEIGHT: 1.0 #1.2
+        MAX_HEIGHT: 1.2 #1.8
+        MIN_ELEVATION: 75
+        MAX_ELEVATION: 90
+        MIN_AZIMUTH: -15
+        MAX_AZIMUTH: 15
+    
+LIGHT:
+    MIN_NUM: 1
+    MAX_NUM: 2
+    MIN_ENERGY: 8
+    MAX_ENERGY: 10
+    MIN_HEIGHT: 1.2
+    MAX_HEIGHT: 1.5
+    MIN_ELEVATION: 75
+    MAX_ELEVATION: 90

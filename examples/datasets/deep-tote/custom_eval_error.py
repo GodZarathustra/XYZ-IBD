@@ -12,8 +12,6 @@ from typing import List
 from loguru import logger
 from functools import partial
 from omegaconf import OmegaConf
-import pdb
-import time
 
 def load_object(object_cfg):
     object = bproc.loader.load_obj(object_cfg.FILE)[0]
@@ -32,6 +30,34 @@ def load_object(object_cfg):
     elif unit == 'mm':
         object.set_scale([0.001, 0.001, 0.001])
         logger.info('Scale the object by 0.001: mm to m')
+
+    if object_cfg.DECIMATION > 0:
+        num_polygons = len(object.get_mesh().polygons.values())
+        logger.info('Number of polygons of the object: {}', num_polygons)
+        if object_cfg.DECIMATION < num_polygons:
+            object.edit_mode()
+            ratio = object_cfg.DECIMATION / num_polygons
+            bpy.ops.mesh.decimate(ratio=ratio)
+            bpy.ops.mesh.quads_convert_to_tris(quad_method='BEAUTY', ngon_method='BEAUTY')
+            object.object_mode()
+            num_polygons = len(object.get_mesh().polygons.values())
+            logger.info('Decimate object to {} polygons', num_polygons)
+
+    if object_cfg.MOVE_TO_MASS_CENTER:
+        object.set_origin(mode='CENTER_OF_MASS')
+        object.set_location([0,0,0])
+        logger.info('Move the object to the center of mass')
+
+    if object_cfg.SHADING_MODE in ['auto', 'flat', 'smooth']:
+        object.set_shading_mode(object_cfg.SHADING_MODE)
+        logger.info('Set shading mode: {}', object_cfg.SHADING_MODE)
+    return object
+
+def load_sphere(object_cfg):
+    # object = bproc.loader.load_obj(object_cfg.FILE)[0]
+    object = bproc.object.create_primitive('SPHERE', segments=320, ring_count=160, radius=0.06,
+                                           calc_uvs=True, enter_editmode=False, align='WORLD', location=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0),
+                                           scale=(1, 1, 1))
 
     if object_cfg.DECIMATION > 0:
         num_polygons = len(object.get_mesh().polygons.values())
@@ -136,28 +162,9 @@ def sample_objects(base_obj: bproc.types.MeshObject,
         obj.hide(False)
         obj.enable_rigidbody(True, mass=1.0, friction = friction, linear_damping = 0.99, angular_damping = 0.99, collision_margin=0.0005)
         objects.append(obj)
-
     padding = sampler_cfg.MIN_HEIGHT - tote_cfg.HEIGHT
-    # cube_min = [-tote_cfg.WIDTH - padding, -tote_cfg.LENGTH - padding, sampler_cfg.MIN_HEIGHT]
-    # cube_max = [tote_cfg.WIDTH + padding, tote_cfg.LENGTH  + padding, sampler_cfg.MAX_HEIGHT]
-
-    cube_min = [-tote_cfg.WIDTH + padding, -tote_cfg.LENGTH + padding, sampler_cfg.MIN_HEIGHT]
-    cube_max = [tote_cfg.WIDTH - padding, tote_cfg.LENGTH - padding, sampler_cfg.MAX_HEIGHT]
-
-    # Add a small margin from the walls (e.g., 0.02 units) to prevent objects from touching or intersecting walls
-    # margin = 0.02
-    # Define the sampling volume to be strictly inside the tote
-    # cube_min = [
-    #     -tote_cfg.WIDTH/2 + margin,  # Start margin units from left wall
-    #     -tote_cfg.LENGTH/2 + margin, # Start margin units from back wall
-    #     0 + margin                   # Start margin units from bottom
-    # ]
-    # cube_max = [
-    #     tote_cfg.WIDTH/2 - margin,   # End margin units from right wall
-    #     tote_cfg.LENGTH/2 - margin,  # End margin units from front wall
-    #     tote_cfg.HEIGHT - margin     # End margin units from top
-    # ]
-
+    cube_min = [-tote_cfg.KP*tote_cfg.WIDTH, -tote_cfg.KP*tote_cfg.LENGTH, sampler_cfg.MIN_HEIGHT] #- padding
+    cube_max = [tote_cfg.KP*tote_cfg.WIDTH, tote_cfg.KP*tote_cfg.LENGTH, sampler_cfg.MAX_HEIGHT] # + padding
     sample_pose_partial = partial(sample_pose, cube_min=cube_min, cube_max=cube_max)
     bproc.object.sample_poses(objects, sample_pose_partial, objects_to_check_collisions)
     if sampler_cfg.PHYSICS.ENABLE:
@@ -179,78 +186,48 @@ def sample_lights(light_cfg) -> List[bproc.types.Light]:
                                        radius_max=light_cfg.MAX_HEIGHT,
                                        elevation_min=light_cfg.MIN_ELEVATION,
                                        elevation_max=light_cfg.MAX_ELEVATION)
-        # light.set_color(np.random.uniform([0.5, 0.5, 0.5], [1.0, 1.0, 1.0]))
-        light.set_color(np.random.uniform([0.6, 0.6, 0.65], [0.8, 0.8, 0.85]))
+        light.set_color(np.random.uniform([0.5, 0.5, 0.5], [1.0, 1.0, 1.0]))
         light.set_location(location)
         lights.append(light)
     return lights
 
-# def set_camera_intrinsics(camera_cfg):
-#     random_percent = 0.01 * camera_cfg.RANDOM_PERCENT
-#     min_ratio = 1 - random_percent
-#     max_ratio = 1 + random_percent
-#     fx = np.random.uniform(camera_cfg.FX * min_ratio, camera_cfg.FX * max_ratio)
-#     fy = np.random.uniform(camera_cfg.FY * min_ratio, camera_cfg.FY * max_ratio)
-#     ppx = np.random.uniform(camera_cfg.PPX * min_ratio, camera_cfg.PPX * max_ratio)
-#     ppy = np.random.uniform(camera_cfg.PPY * min_ratio, camera_cfg.PPY * max_ratio)
-#     width = camera_cfg.WIDTH
-#     height = camera_cfg.HEIGHT
-#     bproc.camera.set_intrinsics_from_K_matrix([[fx, 0, ppx], [0, fy, ppy], [0, 0, 1]], width, height, 0.05, 10)
-#     return [[fx, 0, ppx], [0, fy, ppy], [0, 0, 1]]
-
 def set_camera_intrinsics(camera_cfg):
     fx = camera_cfg.FX
-    fy = camera_cfg.FY 
+    fy = camera_cfg.FY
     ppx = camera_cfg.PPX
     ppy = camera_cfg.PPY
     width = camera_cfg.WIDTH
     height = camera_cfg.HEIGHT
-    bproc.camera.set_intrinsics_from_K_matrix([[fx, 0, ppx], [0, fy, ppy], [0, 0, 1]], width, height, 0.05, 10)
-    return [[fx, 0, ppx], [0, fy, ppy], [0, 0, 1]]
-    
-# def sample_camera(objects, sampler_cfg):
-#     location = bproc.sampler.shell(center=[0, 0, 0],
-#                                     radius_min=sampler_cfg.MIN_HEIGHT,
-#                                     radius_max=sampler_cfg.MAX_HEIGHT,
-#                                     elevation_min=sampler_cfg.MIN_ELEVATION,
-#                                     elevation_max=sampler_cfg.MAX_ELEVATION)
-#     # poi = bproc.object.compute_poi(np.random.choice(objects, size=min(10, len(objects)), replace=False))
-#     # rotation_matrix = bproc.camera.rotation_from_forward_vec(poi - location, inplane_rot=np.random.uniform(-3.14159, 3.14159))
-#     poi = bproc.object.compute_poi(objects)
-#     rotation_matrix = bproc.camera.rotation_from_forward_vec(poi - location, inplane_rot=0)
-#     cam2world_matrix = bproc.math.build_transformation_mat(location, rotation_matrix)
-#     bproc.camera.add_camera_pose(cam2world_matrix, frame=0)
-#     return cam2world_matrix
 
-def sample_camera(objects, sampler_cfg, tote_cfg):
-    # Calculate center point based on tote dimensions
-    tote_center = [0, 0, tote_cfg.HEIGHT/2]  # Center of the tote
+    bproc.camera.set_intrinsics_from_K_matrix([[fx, 0, ppx], [0, fy, ppy], [0, 0, 1]], width, height, 0, 10)
+    mapping_coords = bproc.camera.set_lens_distortion(camera_cfg.k1, camera_cfg.k2, camera_cfg.k3, camera_cfg.p1, camera_cfg.p2, use_global_storage=False)
+
+    return [[fx, 0, ppx], [0, fy, ppy], [0, 0, 1]], mapping_coords
     
-    # Set camera position using shell sampler
-    location = bproc.sampler.shell(
-        center=tote_center,  # Use tote center instead of [0,0,0]
-        radius_min=sampler_cfg.MIN_HEIGHT,
-        radius_max=sampler_cfg.MAX_HEIGHT,
-        elevation_min=sampler_cfg.MIN_ELEVATION,
-        elevation_max=sampler_cfg.MAX_ELEVATION,
-        azimuth_min=sampler_cfg.MIN_AZIMUTH, 
-        azimuth_max=sampler_cfg.MAX_AZIMUTH  
-    )
-    
-    # Calculate point of interest at tote center
-    poi = np.array(tote_center)  # Use fixed tote center instead of random objects
-    
-    # Get rotation matrix with fixed in-plane rotation
-    rotation_matrix = bproc.camera.rotation_from_forward_vec(
-        poi - location,
-        inplane_rot=0  # Fix camera roll
-    )
-    
-    # Build and set camera pose
+def sample_camera(objects, sampler_cfg):
+    location = bproc.sampler.shell(center=[0, 0, 0],
+                                    radius_min=sampler_cfg.MIN_HEIGHT,
+                                    radius_max=sampler_cfg.MAX_HEIGHT,
+                                    elevation_min=sampler_cfg.MIN_ELEVATION,
+                                    elevation_max=sampler_cfg.MAX_ELEVATION)
+    poi = bproc.object.compute_poi(np.random.choice(objects, size=min(10, len(objects)), replace=False))
+    rotation_matrix = bproc.camera.rotation_from_forward_vec(poi - location, inplane_rot=np.random.uniform(-3.14159, 3.14159))
     cam2world_matrix = bproc.math.build_transformation_mat(location, rotation_matrix)
     bproc.camera.add_camera_pose(cam2world_matrix, frame=0)
-    
     return cam2world_matrix
+
+
+def sample_camera_viewpoints(sampler_cfg, camera_id):
+    cam_pose = np.loadtxt(sampler_cfg.VIEW_PATH)[camera_id].reshape((4, 4))
+    major_cam2world = np.array([[0, 1, 0, 0],
+                        [1, 0, 0, 0],
+                        [0, 0, -1, sampler_cfg.Z], #1.0 0.8 0.7
+                        [0, 0, 0, 1]], dtype=float)
+    cam2world_mat_common = np.dot(major_cam2world, cam_pose)
+    cam2world_matrix = camera_pose_blender2common(cam2world_mat_common)
+    bproc.camera.add_camera_pose(cam2world_matrix, frame=0)
+    return cam2world_matrix
+
 
 def sample_objects_material(objects, sampler_cfg):
     for obj in objects:        
@@ -278,23 +255,29 @@ def camera_pose_blender2common(pose):
                         [0 ,0, 0, 1]], dtype=float)
     return np.dot(pose, flip_yz)
 
-def write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id):
+
+def write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id, mapping_coords):
     if 'colors' in data:
         color = data['colors'][0]
-        color_dir = osp.join(scene_dir, 'color')
+        color = bproc.postprocessing.apply_lens_distortion(color, mapping_coords=mapping_coords, orig_res_x=cfg.CAMERA.INTRINSICS.WIDTH, orig_res_y=cfg.CAMERA.INTRINSICS.HEIGHT,
+                                                   use_interpolation=False)
+
+        color_dir = osp.join(scene_dir, 'rgb')
         os.makedirs(color_dir, exist_ok=True)
         color_path = f'{color_dir}/{camera_id:06}.png'
         cv2.imwrite(color_path, color)
+        image_height, image_width = color.shape[:2]
     if 'depth' in data:
-        # depth = data['depth'][0]
-        # depth = (depth / cfg.DEPTH_SCALE).astype(np.uint16)
-        depth = data['depth'][0] * 1000
+        depth = data['depth'][0]
+        depth = bproc.postprocessing.apply_lens_distortion(depth, mapping_coords=mapping_coords,
+                                                           orig_res_x=cfg.CAMERA.INTRINSICS.WIDTH,
+                                                           orig_res_y=cfg.CAMERA.INTRINSICS.HEIGHT,
+                                                           use_interpolation=False)
         depth = (depth / cfg.DEPTH_SCALE).astype(np.uint16)
         depth_dir = osp.join(scene_dir, 'depth')
         os.makedirs(depth_dir, exist_ok=True)
         depth_path = f'{depth_dir}/{camera_id:06}.png'
         cv2.imwrite(depth_path, depth)
-    
     cam_infos_path = osp.join(scene_dir, 'scene_cameras.json')
     if osp.exists(cam_infos_path):
         with open(cam_infos_path, 'r') as f:
@@ -302,7 +285,6 @@ def write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id):
     else:
         cam_infos = dict()
     cam2world_mat = camera_pose_blender2common(cam2world_mat)
-    image_height, image_width = color.shape[:2]
     cam_infos[f'{camera_id:06}'] = {
             "fx": cam_K[0][0],
             "fy": cam_K[1][1],
@@ -322,156 +304,66 @@ def write_object_poses(objects, scene_dir):
     with open(osp.join(scene_dir, 'scene_objects.json'), 'w') as f:
         json.dump(data, f, indent=2)
 
-def export_mesh(filepath: str):
-    ext = os.path.splitext(filepath)[-1]
-    if ext not in ['.ply', '.stl']:
-        raise Exception('export_mesh only support ply and stl format')
-    if ext == '.ply':
-        bpy.ops.export_mesh.ply(filepath=filepath)
-    elif ext == '.stl':
-        bpy.ops.export_mesh.stl(filepath=filepath)
-    print('Export CAD Model: {}'.format(filepath))
 
-def write_scene_camera_json(cam_K, cfg, camera_id, scene_dir):
-    scene_camera_path = osp.join(scene_dir, 'scene_camera.json')
-    if osp.exists(scene_camera_path):
-        with open(scene_camera_path, 'r') as f:
-            scene_camera = json.load(f)
-    else:
-        scene_camera = dict()
-    scene_camera[f'{camera_id}'] = {
-        "cam_K": [item for sublist in cam_K for item in sublist],
-        "depth_scale": cfg.DEPTH_SCALE,
-        }
-    with open(scene_camera_path, 'w') as f:
-        json.dump(scene_camera, f, indent=4)
-
-def write_scene_gt_json(cam2world_mat, objects, camera_id, obj_id, scene_dir):
-    scene_gt_path = osp.join(scene_dir, 'scene_gt.json')
-    if osp.exists(scene_gt_path):
-        with open(scene_gt_path, 'r') as f:
-            scene_gt = json.load(f)
-    else:
-        scene_gt = dict()
-
-    object_poses = [obj.get_local2world_mat() for obj in objects]
-    cam2world_mat = camera_pose_blender2common(cam2world_mat)
-    world2cam_mat = np.linalg.inv(cam2world_mat)
-    for obj_pose in object_poses:
-        # Transform from object-to-world to object-to-camera
-        obj2cam_mat = world2cam_mat @ obj_pose
-        # Extract rotation (first 3x3) and translation (last column)
-        cam_R_m2c = obj2cam_mat[:3, :3]
-        cam_t_m2c = obj2cam_mat[:3, 3].reshape(3, 1)
-        cam_t_m2c = cam_t_m2c * 1000
-        # Initialize list for camera_id if it doesn't exist
-        if f'{camera_id}' not in scene_gt:
-            scene_gt[f'{camera_id}'] = []
-        # Append new pose to the list for this camera_id
-        scene_gt[f'{camera_id}'].append({
-            "cam_R_m2c": cam_R_m2c.tolist(),
-            "cam_t_m2c": cam_t_m2c.flatten().tolist(),
-            "obj_id": obj_id,
-        })
-    with open(scene_gt_path, 'w') as f:
-        json.dump(scene_gt, f, indent=4)
-
-def write_mask_data(mask, camera_id, index, scene_dir, mask_type):
-    # mask_type: mask / mask_visib
-    mask_dir = osp.join(scene_dir, mask_type)
-    os.makedirs(mask_dir, exist_ok=True)
-    mask_path = f'{mask_dir}/{camera_id:06}_{index:06d}.png'
-    cv2.imwrite(mask_path, mask)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--config', type=str, default='path/to/config.yaml' ,help='path to the config.yaml file')
+parser.add_argument('--config', type=str, default='path/to/config.yaml', help='path to the config.yaml file')
 args = parser.parse_args()
 if not osp.exists(args.config):
     logger.warning('given config file not found, use default configuration.')
-    args.config = osp.join(osp.dirname(__file__), 'config.yaml')
-
+    args.config = osp.join(osp.dirname(__file__), 'config_photoneo_liangan5.yaml')
 cfg = OmegaConf.load(args.config)
 
+shutil.rmtree(cfg.OUTPUT_DIR, ignore_errors=True)
+os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+
 bproc.init()
-bproc.renderer.set_max_amount_of_samples(10)
+bproc.renderer.set_max_amount_of_samples(1)
 if cfg.ENABLE_DEPTH:
     bproc.renderer.enable_depth_output(activate_antialiasing=False)
 
-# shutil.rmtree(cfg.OUTPUT_DIR, ignore_errors=True)
-os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
-
-file_name = os.path.basename(cfg.OBJECT.FILE)
-obj_id = int(file_name.split('_')[1].split('.')[0])
-
 materials = None
-
-##################################################
 base_obj = load_object(cfg.OBJECT)
+# base_obj = load_sphere(cfg.OBJECT)
+
 # export mm & m unit model
-export_mesh(osp.join(cfg.OUTPUT_DIR, 'model_m.ply'))
-scale = base_obj.get_scale()
-base_obj.set_scale(scale * 1000)
-export_mesh(osp.join(cfg.OUTPUT_DIR, 'model_mm.ply'))
-base_obj.set_scale(scale)
+# export_mesh(osp.join(cfg.OUTPUT_DIR, 'model_m.ply'))
+# scale = base_obj.get_scale()
+# base_obj.set_scale(scale * 1000)
+# export_mesh(osp.join(cfg.OUTPUT_DIR, 'model_mm.ply'))
+# base_obj.set_scale(scale)
 
 # reload m unit model
-delete_objects([base_obj])
-# pdb.set_trace()
-cfg.OBJECT.FILE = osp.join(cfg.OUTPUT_DIR, 'model_m.ply')
-##################################################
-
-base_obj = load_object(cfg.OBJECT)
+# delete_objects([base_obj])
+# cfg.OBJECT.FILE = osp.join(cfg.OUTPUT_DIR, 'model_m.ply')
+# base_obj = load_object(cfg.OBJECT)
 base_obj.hide()
 
-compute_tote_size(base_obj, cfg.TOTE)
+# compute_tote_size(base_obj, cfg.TOTE)
 tote_planes, funnel_planes = create_tote_planes(cfg.TOTE)
+for scene_id in range(cfg.NUM_SCENES):
+    logger.info('Scene {}:', scene_id)
+    scene_dir = osp.join(cfg.OUTPUT_DIR, f'{scene_id:06}')
+    os.makedirs(scene_dir, exist_ok=True)
+    objects = sample_objects(base_obj, tote_planes + funnel_planes, cfg.OBJECT.POSE_SAMPLER, cfg.TOTE)
+    write_object_poses(objects, scene_dir)
+    for camera_id in range(cfg.NUM_CAMERAS_PER_SCENE):
+        logger.info('Scene {} / Cemera {}', scene_id, camera_id)
+        cam_K, mapping_coords = set_camera_intrinsics(cfg.CAMERA.INTRINSICS)
+        lights = sample_lights(cfg.LIGHT)
+        # if cfg.TOTE.RANDOM_TEXTURE and osp.exists(cfg.CC_TEXTURES_DIR):
+        #     if materials is None:
+        #         materials = bproc.loader.load_ccmaterials(cfg.CC_TEXTURES_DIR)
+        #     mat = np.random.choice(materials)
+        #     for plane in tote_planes:
+        #         plane.replace_materials(mat)
+        cam2world_mat = sample_camera_viewpoints(cfg.CAMERA.POSE_SAMPLER, camera_id)
+        # sample_objects_material(objects, cfg.OBJECT.MATERIAL_SAMPLER)
 
-# for scene_id in range(cfg.NUM_SCENES):
-    # logger.info('Scene {}:', scene_id)
-    # scene_dir = osp.join(cfg.OUTPUT_DIR, f'{scene_id:06}')
-    # os.makedirs(scene_dir, exist_ok=True)
+        data = bproc.renderer.render()
+        write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id, mapping_coords)
 
-os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
-scene_id = len([item for item in os.listdir(cfg.OUTPUT_DIR) if osp.isdir(osp.join(cfg.OUTPUT_DIR, item))])
-scene_dir = osp.join(cfg.OUTPUT_DIR, f'{scene_id:06}')
-os.makedirs(scene_dir, exist_ok=True)
+        delete_lights(lights)
 
-objects = sample_objects(base_obj, tote_planes + funnel_planes, cfg.OBJECT.POSE_SAMPLER, cfg.TOTE)
-write_object_poses(objects, scene_dir)
-lights = sample_lights(cfg.LIGHT)
-
-for camera_id in range(cfg.NUM_CAMERAS_PER_SCENE):
-    logger.info('Scene {} / Cemera {}', scene_id, camera_id)
-    cam_K = set_camera_intrinsics(cfg.CAMERA.INTRINSICS)
-    if cfg.TOTE.RANDOM_TEXTURE and osp.exists(cfg.CC_TEXTURES_DIR):
-        if materials is None:
-            materials = bproc.loader.load_ccmaterials(cfg.CC_TEXTURES_DIR)
-        mat = np.random.choice(materials)
-        for plane in tote_planes:
-            plane.replace_materials(mat)
-
-    cam2world_mat = sample_camera(objects, cfg.CAMERA.POSE_SAMPLER, cfg.TOTE)
-    sample_objects_material(objects, cfg.OBJECT.MATERIAL_SAMPLER)
-    data = bproc.renderer.render()
-    write_data(data, cam_K, cam2world_mat, cfg, scene_dir, camera_id)
-    write_scene_camera_json(cam_K, cfg, camera_id, scene_dir)
-    write_scene_gt_json(cam2world_mat, objects, camera_id, obj_id, scene_dir)
-
-    # process the mask visib
-    data = bproc.renderer.render_segmap(map_by=["instance", "class", "name"])
-    num_of_objects = len(objects)
-    model_name = osp.splitext(osp.basename(cfg.OBJECT.FILE))[0]
-    object_names = [f"{model_name}.{obj_id:03d}" for obj_id in range(1, num_of_objects + 1)]
-    for object_index, object_name in enumerate(object_names):
-        object_idx = [entry["idx"] for entry in data["instance_attribute_maps"][0] if entry["name"] == object_name][0]
-        object_mask_visib = data["instance_segmaps"][0] == object_idx
-        # try:
-        #     object_idx = [entry["idx"] for entry in data["instance_attribute_maps"][0] if entry["name"] == object_name][0]
-        #     object_mask_visib = data["instance_segmaps"][0] == object_idx
-        # except:
-        #     object_mask_visib = np.zeros_like(data["instance_segmaps"][0])
-        object_mask_visib = (object_mask_visib * 255).astype(np.uint8)
-        write_mask_data(object_mask_visib, camera_id, object_index, scene_dir, mask_type='mask_visib')
-        
-delete_objects(objects)
-delete_lights(lights)
+    delete_objects(objects)
+    

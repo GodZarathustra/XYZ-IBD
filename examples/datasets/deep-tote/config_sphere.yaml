@@ -1,0 +1,75 @@
+CC_TEXTURES_DIR: '/home/bproc/input/cc_textures'
+OUTPUT_DIR: '/home/xyz/LJZ/ljz/xyz/bproc'
+ENABLE_DEPTH: true
+DEPTH_SCALE: 0.0001
+NUM_SCENES: 1
+NUM_CAMERAS_PER_SCENE: 50
+
+OBJECT:
+    FILE: "/home/xyz/LJZ/ljz/xyz/models/qiuxiao/model_m.ply"
+    # m / mm / auto
+    UNIT: 'm'
+    DECIMATION: 15000  # -1 for no decimation  # 对物体的多边形进行减少（Decimation）
+    MOVE_TO_MASS_CENTER: false # true
+    # auto / smooth / flat
+    SHADING_MODE: 'auto'
+    POSE_SAMPLER:
+        MIN_NUM: 4
+        MAX_NUM: 4
+        MIN_HEIGHT: 1
+        MAX_HEIGHT: 1.5
+        PHYSICS:
+            ENABLE: true
+            MIN_SIMULATION_TIME: 3
+            MAX_SIMULATION_TIME: 10
+            SUBSTEPS_PER_FRAME: 15
+            SOLVER_ITERS: 15
+    MATERIAL_SAMPLER:
+        MIN_GRAY: 0.0
+        MAX_GRAY: 1.0
+        MIN_ROUGHNESS: 0
+        MAX_ROUGHNESS: 0.5
+        MIN_SPECULAR: 0.3
+        MAX_SPECULAR: 1.0
+        MIN_METALLIC: 0
+        MAX_METALLIC: 1.0
+
+TOTE:
+    # auto / scalar
+    WIDTH: 0.3 #0.265
+    LENGTH: 0.42 #0.355
+    HEIGHT: 0.1 #0.15
+    WALL_VISIBLE: false
+    RANDOM_TEXTURE: false # true
+    KP: 1.0 #表示我物体采样的位置是在框中间百分之七十的区域，否则零件会在边缘
+
+
+CAMERA:
+    INTRINSICS:
+        FX: 2329.0373825994757
+        FY: 2329.791889630588
+        PPX: 1056.724360034255
+        PPY: 721.6946082848939
+        WIDTH: 2064
+        HEIGHT: 1544
+        k1: -0.2364925104075798
+        k2: 0.15811754232064384
+        p1: 0.0008559894239767706
+        p2: -0.0004548396266051892
+        k3: -0.05387265470679034
+    POSE_SAMPLER:
+#        MIN_HEIGHT: 0.9
+#        MAX_HEIGHT: 1.0
+#        MIN_ELEVATION: 75
+#        MAX_ELEVATION: 90
+        VIEW_PATH: "/home/xyz/dataset/V2/cali_sphere_50viewpoints_0403/viewpoints2/cam_pos_raw.txt"
+    
+LIGHT:
+    MIN_NUM: 1
+    MAX_NUM: 3
+    MIN_ENERGY: 1
+    MAX_ENERGY: 20
+    MIN_HEIGHT: 1.2
+    MAX_HEIGHT: 1.8
+    MIN_ELEVATION: 75
+    MAX_ELEVATION: 90
