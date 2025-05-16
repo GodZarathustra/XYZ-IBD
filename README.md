@@ -32,11 +32,11 @@ Please refer to the [baseline repository](https://github.com/GodZarathustra/Base
 ## 🛠️ Data Processing & Evaluation
 
 - 📊 **BOP Toolkit Integration**  
-  XYZ-IBD is fully compatible with the [bop_toolkit](https://github.com/thodan/bop_toolkit) for:
+  XYZ-IBD is prepared with BOP format(see [here](https://github.com/thodan/bop_toolkit/blob/master/docs/bop_datasets_format.md) for the data format details), and is fully compatible with the [bop_toolkit](https://github.com/thodan/bop_toolkit) for:
   - Data loading and visualization
-  - Evaluation against other BOP datasets
+  - Evaluation on BOP Metrics
 
-- 📊  **6D Pose Evaluation Server**  
+- 📊  **2D Detection and 6D Pose Evaluation Server**  
   Submit your predictions for evaluation on the official BOP server:  
   [https://bop.felk.cvut.cz/login/?next=/sub_upload/](https://bop.felk.cvut.cz/login/?next=/sub_upload/)
 
