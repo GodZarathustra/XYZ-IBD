@@ -1,18 +1,51 @@
-# BlenderProc2
+# 🌐 	XYZ-IBD: A High-precision Bin-picking Dataset for Object 6D pose estimation Capturing Real-world Industrial Complexity
 
-[![Documentation](https://img.shields.io/badge/documentation-passing-brightgreen.svg)](https://dlr-rm.github.io/BlenderProc/)
-[![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/DLR-RM/BlenderProc/blob/main/examples/basics/basic/basic_example.ipynb)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D pose estimation that captures real-world industrial complexity, including challenging object geometries, reflective materials, severe occlusions, and dense clutter. The dataset reflects authentic robotic manipulation scenarios with millimeter-accurate annotations. 
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/6104887/137109535-275a2aa3-f5fd-4173-9d16-a9a9b86f66e7.gif" alt="Front readme image" width=100%>
-</p>
+---
 
-A procedural Blender pipeline for photorealistic rendering.
+## 📦 Dataset Access
 
-[Documentation](https://dlr-rm.github.io/BlenderProc) | [Tutorials](#tutorials) | [Examples](#examples) | [ArXiv paper](https://arxiv.org/abs/1911.01911) | [Workshop paper](https://sim2real.github.io/assets/papers/2020/denninger.pdf)
+- 🔗 **Project Page**: [xyz-ibd.github.io/XYZ-IBD](https://xyz-ibd.github.io/XYZ-IBD)
+- 🤗 **Hugging Face**: [bop-benchmark/xyzibd](https://huggingface.co/datasets/bop-benchmark/xyzibd)
 
-## Docker Usage
+---
+
+## 🏆 Ongoing Challenges
+
+- 🧊 **Model-based 2D/6D Object Detection**  
+  [BOP Challenge 2025 (Industrial Track)](https://bop.felk.cvut.cz/challenges/)
+
+- 🌄 **Monocular Depth Estimation**  
+  [TRiKEY Challenge 2025 (Monocular Depth Track)](https://sites.google.com/view/iccv25tricky/home#h.9sn9fynz7to1)
+
+---
+
+## 🚀 Baseline Implementations
+
+We provide reference implementations to kick-start research and benchmarking. Please refer to the [baseline repository](#) for model training and evaluation scripts. *(Link coming soon or to be updated.)*
+
+---
+
+## 🛠️ Data Processing & Evaluation
+
+- 📊 **BOP Toolkit Integration**  
+  XYZ-IBD is fully compatible with the [bop_toolkit](https://github.com/thodan/bop_toolkit) for:
+  - Data loading and visualization
+  - Evaluation against other BOP datasets
+
+- ☁️ **6D Pose Evaluation Server**  
+  Submit your predictions for evaluation on the official BOP server:  
+  [https://bop.felk.cvut.cz/login/?next=/sub_upload/](https://bop.felk.cvut.cz/login/?next=/sub_upload/)
+
+- 🌧️ **Monocular Depth Evaluation**  
+  Participate in monocular depth leaderboard on Codalab:  
+  [https://codalab.lisn.upsaclay.fr/competitions/22870](https://codalab.lisn.upsaclay.fr/competitions/22870)
+
+---
+
+## Docker usage for our bin-picking simulation rendering
+
 ### Build Docker
  ```python
 cd docker 
@@ -30,3 +63,11 @@ blenderproc run render.py --config=config.yaml
 blenderproc run custom.py --config=config_photoneo_qiuxiao1.yaml
 ### Post Process the synthetic dataset to BOP Format
 blenderproc run gen_masks.py --config=config_photoneo_qiuxiao1.yaml
+
+---
+> ✨ Let’s push the boundaries of robotic perception in cluttered industrial environments!
+## 📫 Contact
+
+For questions, issues, or collaboration inquiries, feel free to open an issue or reach out via the project page.
+
+---
