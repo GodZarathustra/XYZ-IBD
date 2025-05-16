@@ -24,7 +24,8 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D 
 
 ## 🚀 Baseline Implementations
 
-We provide reference implementations to kick-start research and benchmarking. Please refer to the [baseline repository](https://github.com/GodZarathustra/Baselines-for-Industrial-Bin-Picking-BOP2025) for the running details.*
+We provide reference implementations to kick-start research and benchmarking.
+Please refer to the [baseline repository](https://github.com/GodZarathustra/Baselines-for-Industrial-Bin-Picking-BOP2025) for the running details.
 
 
 
