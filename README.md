@@ -2,7 +2,7 @@
 
 Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D pose estimation that captures real-world industrial complexity, including challenging object geometries, reflective materials, severe occlusions, and dense clutter. The dataset reflects authentic robotic manipulation scenarios with millimeter-accurate annotations. 
 
-
+**In this repo, we provide the Docker Usage for our bin-picking simulation rendering. The code is based on the [BlenderProc](https://github.com/DLR-RM/BlenderProc).**
 
 ## 📦 Dataset Access
 
@@ -14,10 +14,10 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D 
 
 ## 🏆 Ongoing Challenges
 
-- 🧊 **Model-based 2D/6D Object Detection**  
+- **Model-based 2D/6D Object Detection**  
   [BOP Challenge 2025 (Industrial Track)](https://bop.felk.cvut.cz/challenges/)
 
-- 🌄 **Monocular Depth Estimation**  
+- **Monocular Depth Estimation**  
   [TRiKEY Challenge 2025 (Monocular Depth Track)](https://sites.google.com/view/iccv25tricky/home#h.9sn9fynz7to1)
 
 
@@ -25,7 +25,7 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D 
 
 ## 🚀 Baseline Implementations
 
-We provide reference implementations to kick-start research and benchmarking. Please refer to the [baseline repository](#) for model training and evaluation scripts. *(Link coming soon or to be updated.)*
+We provide reference implementations to kick-start research and benchmarking. Please refer to the [baseline repository]([#](https://github.com/GodZarathustra/Baselines-for-Industrial-Bin-Picking-BOP2025)) for details.*
 
 
 
@@ -36,11 +36,11 @@ We provide reference implementations to kick-start research and benchmarking. Pl
   - Data loading and visualization
   - Evaluation against other BOP datasets
 
-- ☁️ **6D Pose Evaluation Server**  
+- 📊  **6D Pose Evaluation Server**  
   Submit your predictions for evaluation on the official BOP server:  
   [https://bop.felk.cvut.cz/login/?next=/sub_upload/](https://bop.felk.cvut.cz/login/?next=/sub_upload/)
 
-- 🌧️ **Monocular Depth Evaluation**  
+- 📊  **Monocular Depth Evaluation**  
   Participate in monocular depth leaderboard on Codalab:  
   [https://codalab.lisn.upsaclay.fr/competitions/22870](https://codalab.lisn.upsaclay.fr/competitions/22870)
 
