@@ -13,9 +13,3 @@ jobs:
         with:
           journal: joss
           paper-path: paper.md
-
-      - name: Upload PDF
-        uses: actions/upload-artifact@v3
-        with:
-          name: paper
-          path: paper.pdf
