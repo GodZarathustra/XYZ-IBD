@@ -11,6 +11,7 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D 
 
 
 
+
 ## 🏆 Ongoing Challenges
 
 - 🧊 **Model-based 2D/6D Object Detection**  
@@ -21,9 +22,11 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D 
 
 
 
+
 ## 🚀 Baseline Implementations
 
 We provide reference implementations to kick-start research and benchmarking. Please refer to the [baseline repository](#) for model training and evaluation scripts. *(Link coming soon or to be updated.)*
+
 
 
 ## 🛠️ Data Processing & Evaluation
@@ -40,6 +43,7 @@ We provide reference implementations to kick-start research and benchmarking. Pl
 - 🌧️ **Monocular Depth Evaluation**  
   Participate in monocular depth leaderboard on Codalab:  
   [https://codalab.lisn.upsaclay.fr/competitions/22870](https://codalab.lisn.upsaclay.fr/competitions/22870)
+
 
 
 ## Docker usage for our bin-picking simulation rendering
@@ -61,6 +65,8 @@ blenderproc run render.py --config=config.yaml
 blenderproc run custom.py --config=config_photoneo_qiuxiao1.yaml
 ### Post Process the synthetic dataset to BOP Format
 blenderproc run gen_masks.py --config=config_photoneo_qiuxiao1.yaml
+```
+
 
 ---
 > ✨ Let’s push the boundaries of robotic perception in cluttered industrial environments!
