@@ -18,7 +18,7 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D 
   [BOP Challenge 2025 (Industrial Track)](https://bop.felk.cvut.cz/challenges/)
 
 - **Monocular Depth Estimation**  
-  [TRiKEY Challenge 2025 (Monocular Depth Track)](https://sites.google.com/view/iccv25tricky/home#h.9sn9fynz7to1)
+  [TRICKY Challenge 2025 (Monocular Depth Track)](https://sites.google.com/view/iccv25tricky/home#h.9sn9fynz7to1)
 
 
 
