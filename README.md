@@ -2,14 +2,14 @@
 
 Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D pose estimation that captures real-world industrial complexity, including challenging object geometries, reflective materials, severe occlusions, and dense clutter. The dataset reflects authentic robotic manipulation scenarios with millimeter-accurate annotations. 
 
----
+
 
 ## 📦 Dataset Access
 
 - 🔗 **Project Page**: [xyz-ibd.github.io/XYZ-IBD](https://xyz-ibd.github.io/XYZ-IBD)
 - 🤗 **Hugging Face**: [bop-benchmark/xyzibd](https://huggingface.co/datasets/bop-benchmark/xyzibd)
 
----
+
 
 ## 🏆 Ongoing Challenges
 
@@ -19,13 +19,12 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D 
 - 🌄 **Monocular Depth Estimation**  
   [TRiKEY Challenge 2025 (Monocular Depth Track)](https://sites.google.com/view/iccv25tricky/home#h.9sn9fynz7to1)
 
----
+
 
 ## 🚀 Baseline Implementations
 
 We provide reference implementations to kick-start research and benchmarking. Please refer to the [baseline repository](#) for model training and evaluation scripts. *(Link coming soon or to be updated.)*
 
----
 
 ## 🛠️ Data Processing & Evaluation
 
@@ -42,7 +41,6 @@ We provide reference implementations to kick-start research and benchmarking. Pl
   Participate in monocular depth leaderboard on Codalab:  
   [https://codalab.lisn.upsaclay.fr/competitions/22870](https://codalab.lisn.upsaclay.fr/competitions/22870)
 
----
 
 ## Docker usage for our bin-picking simulation rendering
 
@@ -69,5 +67,3 @@ blenderproc run gen_masks.py --config=config_photoneo_qiuxiao1.yaml
 ## 📫 Contact
 
 For questions, issues, or collaboration inquiries, feel free to open an issue or reach out via the project page.
-
----
