@@ -2,13 +2,13 @@
 
 Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D pose estimation that captures real-world industrial complexity, including challenging object geometries, reflective materials, severe occlusions, and dense clutter. The dataset reflects authentic robotic manipulation scenarios with millimeter-accurate annotations. 
 
-**In this repo, we provide the docker usage for our bin-picking simulation rendering. The code is based on the [BlenderProc](https://github.com/DLR-RM/BlenderProc).**
+**🔥 Note in this repo, we provide the Docker usage for our bin-picking simulation rendering. The code is based on the [BlenderProc](https://github.com/DLR-RM/BlenderProc).**
+
 
 ## 📦 Dataset Access
 
 - 🔗 **Project Page**: [xyz-ibd.github.io/XYZ-IBD](https://xyz-ibd.github.io/XYZ-IBD)
 - 🤗 **Hugging Face**: [bop-benchmark/xyzibd](https://huggingface.co/datasets/bop-benchmark/xyzibd)
-
 
 
 
@@ -19,7 +19,6 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D 
 
 - **Monocular Depth Estimation**  
   [TRiKEY Challenge 2025 (Monocular Depth Track)](https://sites.google.com/view/iccv25tricky/home#h.9sn9fynz7to1)
-
 
 
 
