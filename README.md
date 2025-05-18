@@ -1,6 +1,6 @@
 <p align="left">
-  <img src="images/label_vis.png"  width="45.5%"/>
-  <img src="images/synthetic_vis.png" width="44%"/>
+  <img src="images/label_vis.png"  width="48%"/>
+  <img src="images/synthetic_vis.png" width="47%"/>
 </p>
 
 # XYZ-IBD: A High-precision Bin-picking Dataset for Object 6D Pose Estimation Capturing Real-world Industrial Complexity
