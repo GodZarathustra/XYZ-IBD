@@ -5,7 +5,7 @@
 
 # XYZ-IBD: A High-precision Bin-picking Dataset for Object 6D Pose Estimation Capturing Real-world Industrial Complexity
 
-Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset for 6D pose estimation that captures real-world industrial complexity, including challenging object geometries, reflective materials, severe occlusions, and dense clutter. The dataset reflects authentic robotic manipulation scenarios with millimeter-accurate annotations. 
+Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset that captures **real-world industrial complexity** for 6D pose estimation, including challenging object geometries, reflective materials, severe occlusions, and dense clutter. The dataset reflects authentic robotic manipulation scenarios with millimeter-accurate annotations. 
 
 
 **🔥 Note in this repo, we provide the Docker usage for our bin-picking simulation rendering. The code is based on the [BlenderProc](https://github.com/DLR-RM/BlenderProc).**
