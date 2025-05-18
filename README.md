@@ -19,11 +19,9 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset that ca
 
 ## 🏆 Ongoing Challenges
 
-- **Model-based 2D/6D Object Detection**  
-  [BOP Challenge 2025 (Industrial Track)](https://bop.felk.cvut.cz/challenges/)
+- **Model-based 2D/6D Object Detection**: [BOP Challenge 2025 (Industrial Track)](https://bop.felk.cvut.cz/challenges/)
 
-- **Monocular Depth Estimation**  
-  [TRICKY Challenge 2025 (Monocular Depth Track)](https://sites.google.com/view/iccv25tricky/home#h.9sn9fynz7to1)
+- **Monocular Depth Estimation**: [TRICKY Challenge 2025 (Monocular Depth Track)](https://sites.google.com/view/iccv25tricky/home#h.9sn9fynz7to1)
 
 
 
