@@ -17,12 +17,13 @@ Welcome to the official repository of **XYZ-IBD**, a bin-picking dataset that ca
 
 
 
-## 🏆 Ongoing Challenges
+## 🏆 Ongoing Challenges and Workshops
 
-- **Model-based 2D/6D Object Detection**: [BOP Challenge 2025 (Industrial Track)](https://bop.felk.cvut.cz/challenges/)
+- **[BOP Challenge 2025 (Industrial Track)](https://bop.felk.cvut.cz/challenges/)**
+- **[ICCV 2025 Worokshop - 10th International Workshop on Recovering 6D Object Pose (R6D)](https://cmp.felk.cvut.cz/sixd/workshop_2025/)**
 
-- **Monocular Depth Estimation**: [TRICKY Challenge 2025 (Monocular Depth Track)](https://sites.google.com/view/iccv25tricky/home#h.9sn9fynz7to1)
-
+- **[RICKY Challenge 2025 (Monocular Depth Track)](https://codalab.lisn.upsaclay.fr/competitions/22870#learn_the_details)**
+- **[ICCV 2025 Worokshop - TRICKY 2025: Transparent & Reflective objects In the wild Challenges](https://sites.google.com/view/iccv25tricky/home)**
 
 
 ## 🚀 Baseline Implementations
